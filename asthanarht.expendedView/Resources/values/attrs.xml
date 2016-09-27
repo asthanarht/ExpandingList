@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+  <declare-styleable name="ExpandingItem">
+    <attr name="item_layout" format="reference"/>
+    <attr name="sub_item_layout" format="reference"/>
+    <attr name="separator_layout" format="reference"/>
+    <attr name="indicator_size" format="dimension"/>
+    <attr name="indicator_margin_left" format="dimension"/>
+    <attr name="indicator_margin_right" format="dimension"/>
+    <attr name="show_indicator" format="boolean"/>
+    <attr name="show_animation" format="boolean"/>
+    <attr name="start_collapsed" format="boolean"/>
+    <attr name="animation_duration" format="integer"/>
+  </declare-styleable>
+</resources>
