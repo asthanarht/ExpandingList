@@ -52,8 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExpendingItem.cs" />
-    <Compile Include="ExpendingList.cs" />
-    <Compile Include="MainActivity.cs" />
+    <Compile Include="ExpandingList.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\CustomViewUtil.cs" />

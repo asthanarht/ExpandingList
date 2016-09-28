@@ -159,7 +159,7 @@ namespace asthanarht.expendedView
         /**
          * Holds a reference to the parent. Used to calculate positioning.
          */
-        private ExpendingList mParent;
+        private ExpandingList mParent;
 
         /**
          * Member variable to hold the listener of item state change.
@@ -302,15 +302,16 @@ namespace asthanarht.expendedView
             CustomViewUtil.SetViewWidth(mBaseLayout.FindViewById(Resource.Id.icon_indicator_top), mIndicatorSize);
             CustomViewUtil.SetViewWidth(mBaseLayout.FindViewById(Resource.Id.icon_indicator_bottom), mIndicatorSize);
             CustomViewUtil.SetViewWidth(mBaseLayout.FindViewById(Resource.Id.icon_indicator_middle), mIndicatorSize);
+            mItemLayout.Post(() => CustomViewUtil.SetViewMargin(mIndicatorContainer,
+                        mIndicatorMarginLeft, mItemLayout.MeasuredHeight / 2 - mIndicatorSize / 2, mIndicatorMarginRight, 0));
+            //    mItemLayout.Post(new Runnable() {
 
-//    mItemLayout.Post(new Runnable() {
-
-//            public void run()
-//{
-//    CustomViewUtils.setViewMargin(mIndicatorContainer,
-//            mIndicatorMarginLeft, mItemLayout.GetMeasuredHeight() / 2 - mIndicatorSize / 2, mIndicatorMarginRight, 0);
-//}
-//        });
+            //            public void run()
+            //{
+            //    CustomViewUtils.SetViewMargin(mIndicatorContainer,
+            //            mIndicatorMarginLeft, mItemLayout.GetMeasuredHeight() / 2 - mIndicatorSize / 2, mIndicatorMarginRight, 0);
+            //}
+            //        });
 
             CustomViewUtil.SetViewMarginTop(mBaseLayout.FindViewById(Resource.Id.icon_indicator_middle),
                 (-1*mIndicatorSize/2));
@@ -356,13 +357,16 @@ namespace asthanarht.expendedView
         public void Collapse()
         {
             mSubItemsShown = false;
-//    mBaseSubListLayout.post(new Runnable() {
-//            @Override
-//            public void run()
-//{
-//    CustomViewUtils.setViewHeight(mBaseSubListLayout, 0);
-//}
-//        });
+
+            mBaseSubListLayout.Post(() => CustomViewUtil.SetViewHeight(mBaseSubListLayout, 0));
+
+            //    mBaseSubListLayout.post(new Runnable() {
+            //            @Override
+            //            public void run()
+            //{
+            //    CustomViewUtils.setViewHeight(mBaseSubListLayout, 0);
+            //}
+            //        });
         }
 
         /**
@@ -534,13 +538,7 @@ namespace asthanarht.expendedView
             else
             {
                 mSubItemsShown = true;
-//        mBaseSubListLayout.post(new Runnable() {
-//                @Override
-//                public void run()
-//{
-//    expandIconIndicator(0f);
-//}
-//            });
+                mBaseSubListLayout.Post( ()=> ExpandIconIndicator(0f));
             }
         }
 
@@ -550,7 +548,7 @@ namespace asthanarht.expendedView
      * @return The sub item inflated view at the given position.
      */
 
-        public View getSubItemView(int position)
+        public View GetSubItemView(int position)
         {
             if (mBaseSubListLayout.GetChildAt(position) != null)
             {
@@ -615,7 +613,7 @@ namespace asthanarht.expendedView
  * @param parent The parent of type {@link ExpandingList}
  */
 
-        protected void SetParent(ExpendingList parent)
+        protected void SetParent(ExpandingList parent)
         {
             mParent = parent;
         }
@@ -637,8 +635,8 @@ namespace asthanarht.expendedView
                 };
 
             }
-            
 
+            item.Post(() => mItemHeight = item.MeasuredHeight);
 //            item.post(new Runnable()
 //{
 //    @Override
@@ -650,6 +648,7 @@ namespace asthanarht.expendedView
         }
 
 
+
         /**
      * Measure sub items dimension.
      * @param v The sub item to measure.
@@ -657,6 +656,14 @@ namespace asthanarht.expendedView
 
         private void SetSubItemDimensions(ViewGroup v)
         {
+            v.Post(()=> 
+            {
+                if (mSubItemHeight <= 0)
+               {
+                   mSubItemHeight = v.MeasuredHeight;
+                   mSubItemWidth = v.MeasuredWidth;
+               }
+            });
 //    v.post(new Runnable() {
 //            @Override
 //            public void run()
