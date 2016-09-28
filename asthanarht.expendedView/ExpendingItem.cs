@@ -2,21 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using asthanarht.expendedView.Util;
+using Android.Animation;
 using Android.App;
 using Android.Content;
+using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Android.Util;
-using Android.Content.Res;
+
+using Android.Graphics.Drawables;
+using Android.Views.Animations;
+using Java.Lang;
+using asthanarht.expendedView;
+using Android.Graphics;
 
 namespace asthanarht.expendedView
 {
     public class ExpandingItem : RelativeLayout
     {
-        private static  int DEFAULT_ANIM_DURATION = 300;
+        private static int DEFAULT_ANIM_DURATION = 300;
 
         /**
          * Member variable to hold the Item Layout. Set by item_layout in ExpandingItem layout.
@@ -162,6 +169,7 @@ namespace asthanarht.expendedView
         /**
          * Interface to notify item state changed.
          */
+
         public interface OnItemStateChanged
         {
             /**
@@ -176,24 +184,23 @@ namespace asthanarht.expendedView
          * @param context
          * @param attrs
          */
-        public ExpandingItem(Context context, IAttributeSet attrs):base(context, attrs)
+
+        public ExpandingItem(Context context, IAttributeSet attrs) : base(context, attrs)
         {
-
-
-            
             ReadAttributes(context, attrs);
             SetupStateVariables();
             InflateLayouts(context);
 
             SetupIndicator();
 
-             AddItem(mItemLayout);
+            AddItem(mItemLayout);
             AddView(mBaseLayout);
         }
 
         /**
          * Setup the variables that defines item state.
          */
+
         private void SetupStateVariables()
         {
             if (!mShowAnimation)
@@ -205,6 +212,7 @@ namespace asthanarht.expendedView
         /**
          * Method to setup indicator, including size and visibility.
          */
+
         private void SetupIndicator()
         {
             if (mIndicatorSize != 0)
@@ -212,7 +220,7 @@ namespace asthanarht.expendedView
                 SetIndicatorBackgroundSize();
             }
 
-            mIndicatorContainer.Visibility=(mShowIndicator && mIndicatorSize != 0 ? VISIBLE : GONE);
+            mIndicatorContainer.Visibility = (mShowIndicator && mIndicatorSize != 0 ? ViewStates.Visible : ViewStates.Gone);
         }
 
         /**
@@ -220,27 +228,31 @@ namespace asthanarht.expendedView
          * @param context The custom View Context.
          * @param attrs The atrributes to be read.
          */
+
         private void ReadAttributes(Context context, IAttributeSet attrs)
         {
-            TypedArray array = context.getTheme().obtainStyledAttributes(attrs,
-                    R.styleable.ExpandingItem, 0, 0);
+            TypedArray array = context.Theme.ObtainStyledAttributes(attrs,
+                Resource.Styleable.ExpandingItem, 0, 0);
 
             try
             {
-                mItemLayoutId = array.getResourceId(R.styleable.ExpandingItem_item_layout, 0);
-                mSeparatorLayoutId = array.getResourceId(R.styleable.ExpandingItem_separator_layout, 0);
-                mSubItemLayoutId = array.getResourceId(R.styleable.ExpandingItem_sub_item_layout, 0);
-                mIndicatorSize = array.getDimensionPixelSize(R.styleable.ExpandingItem_indicator_size, 0);
-                mIndicatorMarginLeft = array.getDimensionPixelSize(R.styleable.ExpandingItem_indicator_margin_left, 0);
-                mIndicatorMarginRight = array.getDimensionPixelSize(R.styleable.ExpandingItem_indicator_margin_right, 0);
-                mShowIndicator = array.getBoolean(R.styleable.ExpandingItem_show_indicator, true);
-                mShowAnimation = array.getBoolean(R.styleable.ExpandingItem_show_animation, true);
-                mStartCollapsed = array.getBoolean(R.styleable.ExpandingItem_start_collapsed, true);
-                mAnimationDuration = array.getInt(R.styleable.ExpandingItem_animation_duration, DEFAULT_ANIM_DURATION);
+                mItemLayoutId = array.GetResourceId(Resource.Styleable.ExpandingItem_item_layout, 0);
+                mSeparatorLayoutId = array.GetResourceId(Resource.Styleable.ExpandingItem_separator_layout, 0);
+                mSubItemLayoutId = array.GetResourceId(Resource.Styleable.ExpandingItem_sub_item_layout, 0);
+                mIndicatorSize = array.GetDimensionPixelSize(Resource.Styleable.ExpandingItem_indicator_size, 0);
+                mIndicatorMarginLeft =
+                    array.GetDimensionPixelSize(Resource.Styleable.ExpandingItem_indicator_margin_left, 0);
+                mIndicatorMarginRight =
+                    array.GetDimensionPixelSize(Resource.Styleable.ExpandingItem_indicator_margin_right, 0);
+                mShowIndicator = array.GetBoolean(Resource.Styleable.ExpandingItem_show_indicator, true);
+                mShowAnimation = array.GetBoolean(Resource.Styleable.ExpandingItem_show_animation, true);
+                mStartCollapsed = array.GetBoolean(Resource.Styleable.ExpandingItem_start_collapsed, true);
+                mAnimationDuration = array.GetInt(Resource.Styleable.ExpandingItem_animation_duration,
+                    DEFAULT_ANIM_DURATION);
             }
             finally
             {
-                array.recycle();
+                array.Recycle();
             }
         }
 
@@ -248,200 +260,210 @@ namespace asthanarht.expendedView
          * Method to inflate all layouts.
          * @param context The custom View Context.
          */
+
         private void InflateLayouts(Context context)
         {
-            mInflater = LayoutInflater.from(context);
-            mBaseLayout = (RelativeLayout)mInflater.inflate(R.layout.expanding_item_base_layout,
-                    null, false);
-            mBaseListLayout = (LinearLayout)mBaseLayout.findViewById(R.id.base_list_layout);
-            mBaseSubListLayout = (LinearLayout)mBaseLayout.findViewById(R.id.base_sub_list_layout);
-            mIndicatorImage = (ImageView)mBaseLayout.findViewById(R.id.indicator_image);
-            mBaseLayout.findViewById(R.id.icon_indicator_top).bringToFront();
-            mSeparatorStub = (ViewStub)mBaseLayout.findViewById(R.id.base_separator_stub);
-            mIndicatorBackground = mBaseLayout.findViewById(R.id.icon_indicator_middle);
-            mIndicatorContainer = (ViewGroup)mBaseLayout.findViewById(R.id.indicator_container);
-            mIndicatorContainer.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v)
-        {
-            toggleExpanded();
-        }
-    });
+            mInflater = LayoutInflater.From(context);
+            mBaseLayout = (RelativeLayout) mInflater.Inflate(Resource.Layout.expanding_item_base_layout,
+                null, false);
+            mBaseListLayout = (LinearLayout) mBaseLayout.FindViewById(Resource.Id.base_list_layout);
+            mBaseSubListLayout = (LinearLayout) mBaseLayout.FindViewById(Resource.Id.base_sub_list_layout);
+            mIndicatorImage = (ImageView) mBaseLayout.FindViewById(Resource.Id.indicator_image);
+            mBaseLayout.FindViewById(Resource.Id.icon_indicator_top).BringToFront();
+            mSeparatorStub = (ViewStub) mBaseLayout.FindViewById(Resource.Id.base_separator_stub);
+            mIndicatorBackground = mBaseLayout.FindViewById(Resource.Id.icon_indicator_middle);
+            mIndicatorContainer = (ViewGroup) mBaseLayout.FindViewById(Resource.Id.indicator_container);
+            mIndicatorContainer.Click += delegate
+            {
+                ToggleExpanded();
+            };
 
-        if (mItemLayoutId != 0) {
-            mItemLayout = (ViewGroup) mInflater.inflate(mItemLayoutId, mBaseLayout, false);
+            if (mItemLayoutId != 0)
+            {
+                mItemLayout = (ViewGroup) mInflater.Inflate(mItemLayoutId, mBaseLayout, false);
+            }
+            if (mSeparatorLayoutId != 0)
+            {
+                mSeparatorStub.LayoutResource = mSeparatorLayoutId;
+                mSeparatorStub.Inflate();
+            }
         }
-        if (mSeparatorLayoutId != 0) {
-            mSeparatorStub.setLayoutResource(mSeparatorLayoutId);
-            mSeparatorStub.inflate();
-        }
-    }
 
-    /**
+        /**
      * Set the indicator background width, height and margins
      */
-    private void SetIndicatorBackgroundSize()
-{
-    CustomViewUtils.setViewHeight(mBaseLayout.findViewById(R.id.icon_indicator_top), mIndicatorSize);
-    CustomViewUtils.setViewHeight(mBaseLayout.findViewById(R.id.icon_indicator_bottom), mIndicatorSize);
-    CustomViewUtils.setViewHeight(mBaseLayout.findViewById(R.id.icon_indicator_middle), 0);
 
-    CustomViewUtils.setViewWidth(mBaseLayout.findViewById(R.id.icon_indicator_top), mIndicatorSize);
-    CustomViewUtils.setViewWidth(mBaseLayout.findViewById(R.id.icon_indicator_bottom), mIndicatorSize);
-    CustomViewUtils.setViewWidth(mBaseLayout.findViewById(R.id.icon_indicator_middle), mIndicatorSize);
+        private void SetIndicatorBackgroundSize()
+        {
+            CustomViewUtil.SetViewHeight(mBaseLayout.FindViewById(Resource.Id.icon_indicator_top), mIndicatorSize);
+            CustomViewUtil.SetViewHeight(mBaseLayout.FindViewById(Resource.Id.icon_indicator_bottom), mIndicatorSize);
+            CustomViewUtil.SetViewHeight(mBaseLayout.FindViewById(Resource.Id.icon_indicator_middle), 0);
 
-    mItemLayout.post(new Runnable() {
-            @Override
-            public void run()
-{
-    CustomViewUtils.setViewMargin(mIndicatorContainer,
-            mIndicatorMarginLeft, mItemLayout.getMeasuredHeight() / 2 - mIndicatorSize / 2, mIndicatorMarginRight, 0);
-}
-        });
+            CustomViewUtil.SetViewWidth(mBaseLayout.FindViewById(Resource.Id.icon_indicator_top), mIndicatorSize);
+            CustomViewUtil.SetViewWidth(mBaseLayout.FindViewById(Resource.Id.icon_indicator_bottom), mIndicatorSize);
+            CustomViewUtil.SetViewWidth(mBaseLayout.FindViewById(Resource.Id.icon_indicator_middle), mIndicatorSize);
 
-        CustomViewUtils.setViewMarginTop(mBaseLayout.findViewById(R.id.icon_indicator_middle), (-1 * mIndicatorSize/2));
-        CustomViewUtils.setViewMarginTop(mBaseLayout.findViewById(R.id.icon_indicator_bottom), (-1 * mIndicatorSize/2));
+//    mItemLayout.Post(new Runnable() {
 
-    }
+//            public void run()
+//{
+//    CustomViewUtils.setViewMargin(mIndicatorContainer,
+//            mIndicatorMarginLeft, mItemLayout.GetMeasuredHeight() / 2 - mIndicatorSize / 2, mIndicatorMarginRight, 0);
+//}
+//        });
 
-    /**
+            CustomViewUtil.SetViewMarginTop(mBaseLayout.FindViewById(Resource.Id.icon_indicator_middle),
+                (-1*mIndicatorSize/2));
+            CustomViewUtil.SetViewMarginTop(mBaseLayout.FindViewById(Resource.Id.icon_indicator_bottom),
+                (-1*mIndicatorSize/2));
+
+        }
+
+        /**
      * Set a listener to listen item stage changed.
      * @param listener The listener of type {@link OnItemStateChanged}
      */
-    public void SetStateChangedListener(OnItemStateChanged listener)
-    {
-        mListener = listener;
-    }
+
+        public void SetStateChangedListener(OnItemStateChanged listener)
+        {
+            mListener = listener;
+        }
 
 /**
  * Tells if the item is expanded.
  * @return true if expanded. false otherwise.
  */
-public bool IsExpanded()
-{
-    return mSubItemsShown;
-}
+
+        public bool IsExpanded()
+        {
+            return mSubItemsShown;
+        }
 
 /**
  * Returns the count of sub items.
  * @return The count of sub items.
  */
-public int GetSubItemsCount()
-{
-    return mSubItemCount;
-}
+
+        public int GetSubItemsCount()
+        {
+            return mSubItemCount;
+        }
 
 /**
  * Collapses the sub items.
  */
-public void Collapse()
-{
-    mSubItemsShown = false;
-    mBaseSubListLayout.post(new Runnable() {
-            @Override
-            public void run()
-{
-    CustomViewUtils.setViewHeight(mBaseSubListLayout, 0);
-}
-        });
-    }
 
-    /**
+        public void Collapse()
+        {
+            mSubItemsShown = false;
+//    mBaseSubListLayout.post(new Runnable() {
+//            @Override
+//            public void run()
+//{
+//    CustomViewUtils.setViewHeight(mBaseSubListLayout, 0);
+//}
+//        });
+        }
+
+        /**
      * Expand or collapse the sub items.
      */
-    public void ToggleExpanded()
-{
-    if (mSubItemCount == 0)
-    {
-        return;
-    }
 
-    if (!mSubItemsShown)
-    {
-        adjustItemPosIfHidden();
-    }
+        public void ToggleExpanded()
+        {
+            if (mSubItemCount == 0)
+            {
+                return;
+            }
 
-    toggleSubItems();
-    expandSubItemsWithAnimation(0f);
-    expandIconIndicator(0f);
-    animateSubItemsIn();
-}
+            if (!mSubItemsShown)
+            {
+                AdjustItemPosIfHidden();
+            }
+
+            ToggleSubItems();
+            ExpandSubItemsWithAnimation(0f);
+            ExpandIconIndicator(0f);
+            AnimateSubItemsIn();
+        }
 
 /**
  * Method to adjust Item position in parent if its sub items are outside screen.
  */
-private void adjustItemPosIfHidden()
-{
-    int parentHeight = mParent.getMeasuredHeight();
-    int[] parentPos = new int[2];
-    mParent.getLocationOnScreen(parentPos);
-    int parentY = parentPos[1];
-    int[] itemPos = new int[2];
-    mBaseLayout.getLocationOnScreen(itemPos);
-    int itemY = itemPos[1];
 
-
-    int endPosition = itemY + mItemHeight + (mSubItemHeight * mSubItemCount);
-    int parentEnd = parentY + parentHeight;
-    if (endPosition > parentEnd)
-    {
-        int delta = endPosition - parentEnd;
-        int itemDeltaToTop = itemY - parentY;
-        if (delta > itemDeltaToTop)
+        private void AdjustItemPosIfHidden()
         {
-            delta = itemDeltaToTop;
+            int parentHeight = mParent.Height;
+            int[] parentPos = new int[2];
+            mParent.GetLocationOnScreen(parentPos);
+            int parentY = parentPos[1];
+            int[] itemPos = new int[2];
+            mBaseLayout.GetLocationOnScreen(itemPos);
+            int itemY = itemPos[1];
+
+
+            int endPosition = itemY + mItemHeight + (mSubItemHeight*mSubItemCount);
+            int parentEnd = parentY + parentHeight;
+            if (endPosition > parentEnd)
+            {
+                int delta = endPosition - parentEnd;
+                int itemDeltaToTop = itemY - parentY;
+                if (delta > itemDeltaToTop)
+                {
+                    delta = itemDeltaToTop;
+                }
+                mParent.ScrollY = delta;
+               // mParent.ScrollUpByDelta(delta);
+            }
         }
-        mParent.scrollUpByDelta(delta);
-    }
-}
 
 /**
  * Set the indicator color by resource.
  * @param colorRes The color resource.
  */
-public void setIndicatorColorRes(int colorRes)
-{
-    setIndicatorColor(ContextCompat.getColor(getContext(), colorRes));
-}
+
+        public void SetIndicatorColorRes(int colorRes)
+        {
+            //SetIndicatorColor( ContextCompat.GetColor(Context(), colorRes));
+        }
 
 /**
  * Set the indicator color by color value.
  * @param color The color value.
  */
-public void setIndicatorColor(int color)
-{
-    ((GradientDrawable)findViewById(R.id.icon_indicator_top).getBackground().mutate()).setColor(color);
-    ((GradientDrawable)findViewById(R.id.icon_indicator_bottom).getBackground().mutate()).setColor(color);
-    findViewById(R.id.icon_indicator_middle).setBackgroundColor(color);
-}
+
+        public void SetIndicatorColor(Color color)
+        {
+            ((GradientDrawable) FindViewById(Resource.Id.icon_indicator_top).Background.Mutate()).SetColor(color);
+            ((GradientDrawable) FindViewById(Resource.Id.icon_indicator_bottom).Background.Mutate()).SetColor(color);
+            FindViewById(Resource.Id.icon_indicator_middle).SetBackgroundColor( color);
+        }
 
 /**
  * Set the indicator icon by resource.
  * @param iconRes The icon resource.
  */
-public void setIndicatorIconRes(int iconRes)
-{
-    setIndicatorIcon(ContextCompat.getDrawable(getContext(), iconRes));
-}
+
+        public void SetIndicatorIconRes(int iconRes)
+        {
+            //SetIndicatorIcon(ContextCompat.getDrawable(getContext(), iconRes));
+        }
 
 /**
  * Set the indicator icon.
  * @param icon Drawable of the indicator icon.
  */
-public void setIndicatorIcon(Drawable icon)
-{
-    mIndicatorImage.setImageDrawable(icon);
-}
 
-/**
- * Creates a sub item based on sub_item_layout Layout, set as ExpandingItem layout attribute.
- * @return The inflated sub item view.
- */
-@Nullable
-    public View createSubItem()
-{
-    return createSubItem(-1);
-}
+        public void SetIndicatorIcon(Drawable icon)
+        {
+            mIndicatorImage.SetImageDrawable(icon);
+        }
+
+
+        public View CreateSubItem()
+        {
+            return CreateSubItem(-1);
+        }
 
 /**
  * Creates a sub item based on sub_item_layout Layout, set as ExpandingItem layout attribute.
@@ -449,407 +471,403 @@ public void setIndicatorIcon(Drawable icon)
  *                 If position is -1, the item will be added in the end of the list.
  * @return The inflated sub item view.
  */
-@Nullable
-    public View createSubItem(int position)
-{
-    if (mSubItemLayoutId == 0)
-    {
-        throw new RuntimeException("There is no layout to be inflated. " +
-                "Please set sub_item_layout value");
-    }
 
-    if (position > mBaseSubListLayout.getChildCount())
-    {
-        throw new IllegalArgumentException("Cannot add an item at position " + position +
-                ". List size is " + mBaseSubListLayout.getChildCount());
-    }
+        public View CreateSubItem(int position)
+        {
+            if (mSubItemLayoutId == 0)
+            {
+                throw new RuntimeException("There is no layout to be inflated. " +
+                                           "Please set sub_item_layout value");
+            }
 
-    ViewGroup subItemLayout = (ViewGroup)mInflater.inflate(mSubItemLayoutId, mBaseSubListLayout, false);
-    if (position == -1)
-    {
-        mBaseSubListLayout.addView(subItemLayout);
-    }
-    else
-    {
-        mBaseSubListLayout.addView(subItemLayout, position);
-    }
-    mSubItemCount++;
-    setSubItemDimensions(subItemLayout);
+            if (position > mBaseSubListLayout.ChildCount)
+            {
+                throw new IllegalArgumentException("Cannot add an item at position " + position +
+                                                   ". List size is " + mBaseSubListLayout.ChildCount);
+            }
 
-    //Animate sub view in
-    if (mSubItemsShown)
-    {
-        CustomViewUtils.setViewHeight(subItemLayout, 0);
-        expandSubItemsWithAnimation(mSubItemHeight * (mSubItemCount));
-        expandIconIndicator(mCurrentSubItemsHeight);
-        animateSubItemAppearance(subItemLayout, true);
-        adjustItemPosIfHidden();
-    }
+            ViewGroup subItemLayout = (ViewGroup) mInflater.Inflate(mSubItemLayoutId, mBaseSubListLayout, false);
+            if (position == -1)
+            {
+                mBaseSubListLayout.AddView(subItemLayout);
+            }
+            else
+            {
+                mBaseSubListLayout.AddView(subItemLayout, position);
+            }
+            mSubItemCount++;
+            SetSubItemDimensions(subItemLayout);
 
-    return subItemLayout;
-}
+            //Animate sub view in
+            if (mSubItemsShown)
+            {
+                CustomViewUtil.SetViewHeight(subItemLayout, 0);
+                ExpandSubItemsWithAnimation(mSubItemHeight*(mSubItemCount));
+                ExpandIconIndicator(mCurrentSubItemsHeight);
+                AnimateSubItemAppearance(subItemLayout, true);
+                AdjustItemPosIfHidden();
+            }
+
+            return subItemLayout;
+        }
 
 /**
  * Creates as many sub items as requested in {@param count}.
  * @param count The quantity of sub items.
  */
-public void createSubItems(int count)
-{
-    if (mSubItemLayoutId == 0)
-    {
-        throw new RuntimeException("There is no layout to be inflated. " +
-                "Please set sub_item_layout value");
-    }
-    for (int i = 0; i < count; i++)
-    {
-        createSubItem();
-    }
-    if (mStartCollapsed)
-    {
-        collapse();
-    }
-    else
-    {
-        mSubItemsShown = true;
-        mBaseSubListLayout.post(new Runnable() {
-                @Override
-                public void run()
-{
-    expandIconIndicator(0f);
-}
-            });
-        }
-    }
 
-    /**
+        public void CreateSubItems(int count)
+        {
+            if (mSubItemLayoutId == 0)
+            {
+                throw new RuntimeException("There is no layout to be inflated. " +
+                                           "Please set sub_item_layout value");
+            }
+            for (int i = 0; i < count; i++)
+            {
+                CreateSubItem();
+            }
+            if (mStartCollapsed)
+            {
+                Collapse();
+            }
+            else
+            {
+                mSubItemsShown = true;
+//        mBaseSubListLayout.post(new Runnable() {
+//                @Override
+//                public void run()
+//{
+//    expandIconIndicator(0f);
+//}
+//            });
+            }
+        }
+
+        /**
      * Get a sub item at the given position.
      * @param position The sub item position. Should be > 0.
      * @return The sub item inflated view at the given position.
      */
-    public View getSubItemView(int position)
-{
-    if (mBaseSubListLayout.getChildAt(position) != null)
-    {
-        return mBaseSubListLayout.getChildAt(position);
-    }
-    throw new RuntimeException("There is no sub item for position " + position +
-            ". There are only " + mBaseSubListLayout.getChildCount() + " in the list.");
-}
+
+        public View getSubItemView(int position)
+        {
+            if (mBaseSubListLayout.GetChildAt(position) != null)
+            {
+                return mBaseSubListLayout.GetChildAt(position);
+            }
+            throw new RuntimeException("There is no sub item for position " + position +
+                                       ". There are only " + mBaseSubListLayout.ChildCount + " in the list.");
+        }
 
 /**
  * Remove sub item at the given position.
  * @param position The position of the item to be removed.
  */
-public void removeSubItemAt(int position)
-{
-    removeSubItemFromList(mBaseSubListLayout.getChildAt(position));
-}
+
+        public void RemoveSubItemAt(int position)
+        {
+            RemoveSubItemFromList(mBaseSubListLayout.GetChildAt(position));
+        }
 
 /**
  * Remove the given view representing the sub item. Should be an existing sub item.
  * @param view The sub item to be removed.
  */
-public void removeSubItemFromList(View view)
-{
-    if (view != null)
-    {
-        mBaseSubListLayout.removeView(view);
-        mSubItemCount--;
-        expandSubItemsWithAnimation(mSubItemHeight * (mSubItemCount + 1));
-        if (mSubItemCount == 0)
+
+        public void RemoveSubItemFromList(View view)
         {
-            mCurrentSubItemsHeight = 0;
-            mSubItemsShown = false;
+            if (view != null)
+            {
+                mBaseSubListLayout.RemoveView(view);
+                mSubItemCount--;
+                ExpandSubItemsWithAnimation(mSubItemHeight*(mSubItemCount + 1));
+                if (mSubItemCount == 0)
+                {
+                    mCurrentSubItemsHeight = 0;
+                    mSubItemsShown = false;
+                }
+                ExpandIconIndicator(mCurrentSubItemsHeight);
+            }
         }
-        expandIconIndicator(mCurrentSubItemsHeight);
-    }
-}
 
 /**
  * Remove the given view representing the sub item, with animation. Should be an existing sub item.
  * @param view The sub item to be removed.
  */
-public void removeSubItem(View view)
-{
-    animateSubItemAppearance(view, false);
-}
+
+        public void RemoveSubItem(View view)
+        {
+            AnimateSubItemAppearance(view, false);
+        }
 
 /**
  * Remove all sub items.
  */
-public void removeAllSubItems()
-{
-    mBaseSubListLayout.removeAllViews();
-}
+
+        public void RemoveAllSubItems()
+        {
+            mBaseSubListLayout.RemoveAllViews();
+        }
 
 /**
  * Set the parent in order to auto scroll.
  * @param parent The parent of type {@link ExpandingList}
  */
-protected void setParent(ExpandingList parent)
-{
-    mParent = parent;
-}
+
+        protected void SetParent(ExpendingList parent)
+        {
+            mParent = parent;
+        }
 
 /**
  * Method to add the inflated item and set click listener.
  * Also measures the item height.
  * @param item The inflated item layout.
  */
-private void addItem(final ViewGroup item)
-{
-    if (item != null)
-    {
-        mBaseListLayout.addView(item);
-        item.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v)
-{
-    toggleExpanded();
-}
-            });
-            item.post(new Runnable()
-{
-    @Override
-                public void run()
-{
-    mItemHeight = item.getMeasuredHeight();
-}
-            });
-        }
-    }
 
-    /**
+        private void AddItem(ViewGroup item)
+        {
+            if (item != null)
+            {
+                mBaseListLayout.AddView(item);
+                item.Click += delegate
+                {
+                    ToggleExpanded();
+                };
+
+            }
+            
+
+//            item.post(new Runnable()
+//{
+//    @Override
+//                public void run()
+//{
+//    mItemHeight = item.getMeasuredHeight();
+//}
+//            });
+        }
+
+
+        /**
      * Measure sub items dimension.
      * @param v The sub item to measure.
      */
-    private void setSubItemDimensions(final ViewGroup v)
-{
-    v.post(new Runnable() {
-            @Override
-            public void run()
-{
-    if (mSubItemHeight <= 0)
-    {
-        mSubItemHeight = v.getMeasuredHeight();
-        mSubItemWidth = v.getMeasuredWidth();
-    }
-}
-        });
-    }
 
-    /**
+        private void SetSubItemDimensions(ViewGroup v)
+        {
+//    v.post(new Runnable() {
+//            @Override
+//            public void run()
+//{
+//    if (mSubItemHeight <= 0)
+//    {
+//        mSubItemHeight = v.getMeasuredHeight();
+//        mSubItemWidth = v.getMeasuredWidth();
+//    }
+//}
+//        });
+        }
+
+        /**
      * Toggle sub items collapsed/expanded
      */
-    private void toggleSubItems()
-{
-    mSubItemsShown = !mSubItemsShown;
-    if (mListener != null)
-    {
-        mListener.itemCollapseStateChanged(mSubItemsShown);
-    }
-}
+
+        private void ToggleSubItems()
+        {
+            mSubItemsShown = !mSubItemsShown;
+            if (mListener != null)
+            {
+                mListener.itemCollapseStateChanged(mSubItemsShown);
+            }
+        }
 
 /**
  * Show sub items animation.
  */
-private void animateSubItemsIn()
-{
-    for (int i = 0; i < mSubItemCount; i++)
-    {
-        animateSubViews((ViewGroup)mBaseSubListLayout.getChildAt(i), i);
-        animateViewAlpha((ViewGroup)mBaseSubListLayout.getChildAt(i), i);
-    }
-}
+
+        private void AnimateSubItemsIn()
+        {
+            for (int i = 0; i < mSubItemCount; i++)
+            {
+                AnimateSubViews((ViewGroup) mBaseSubListLayout.GetChildAt(i), i);
+                AnimateViewAlpha((ViewGroup) mBaseSubListLayout.GetChildAt(i), i);
+            }
+        }
 
 /**
  * Show sub items translation animation.
  * @param viewGroup The sub item to animate
  * @param index The sub item index. Needed to calculate delays.
  */
-private void animateSubViews(final ViewGroup viewGroup, int index)
-{
-    if (viewGroup == null)
-    {
-        return;
-    }
-    viewGroup.setLayerType(ViewGroup.LAYER_TYPE_HARDWARE, null);
-    ValueAnimator animation = mSubItemsShown ?
-            ValueAnimator.ofFloat(0f, 1f) :
-            ValueAnimator.ofFloat(1f, 0f);
-    animation.setDuration(mAnimationDuration);
-    int delay = index * mAnimationDuration / mSubItemCount;
-    int invertedDelay = (mSubItemCount - index) * mAnimationDuration / mSubItemCount;
-    animation.setStartDelay(mSubItemsShown ? delay / 2 : invertedDelay / 2);
 
-    animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation)
-{
-    float val = (float)animation.getAnimatedValue();
-    viewGroup.setX((mSubItemWidth / 2 * val) - mSubItemWidth / 2);
-}
-        });
+        private void AnimateSubViews(ViewGroup viewGroup, int index)
+        {
+            if (viewGroup == null)
+            {
+                return;
+            }
+            viewGroup.SetLayerType(LayerType.Hardware, null);
+            ValueAnimator animation = mSubItemsShown
+                ? ValueAnimator.OfFloat(0f, 1f)
+                : ValueAnimator.OfFloat(1f, 0f);
+            animation.SetDuration(mAnimationDuration);
+            int delay = index*mAnimationDuration/mSubItemCount;
+            int invertedDelay = (mSubItemCount - index)*mAnimationDuration/mSubItemCount;
+            animation.StartDelay = (mSubItemsShown ? delay/2 : invertedDelay/2);
 
-        animation.addListener(new AnimatorListenerAdapter()
-{
-    @Override
-            public void onAnimationEnd(Animator animation)
-{
-    viewGroup.setLayerType(ViewGroup.LAYER_TYPE_NONE, null);
-}
-        });
+            animation.Update += delegate
+            {
+                float val = (float) animation.AnimatedValue;
+                viewGroup.SetX((mSubItemWidth/2*val) - mSubItemWidth/2);
+            };
 
-        animation.start();
-    }
+            animation.AnimationEnd += delegate
+            {
+                viewGroup.SetLayerType(LayerType.Hardware, null);
+            };
 
-    /**
+
+            animation.Start();
+        }
+
+        /**
      * Show sub items alpha animation.
      * @param viewGroup The sub item to animate
      * @param index The sub item index. Needed to calculate delays.
      */
-    private void animateViewAlpha(final ViewGroup viewGroup, int index)
-{
-    if (viewGroup == null)
-    {
-        return;
-    }
-    ValueAnimator animation = mSubItemsShown ?
-            ValueAnimator.ofFloat(0f, 1f) :
-            ValueAnimator.ofFloat(1f, 0f);
-    animation.setDuration(mSubItemsShown ? mAnimationDuration * 2 : mAnimationDuration);
-    int delay = index * mAnimationDuration / mSubItemCount;
-    animation.setStartDelay(mSubItemsShown ? delay / 2 : 0);
 
-    animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation)
-{
-    float val = (float)animation.getAnimatedValue();
-    viewGroup.setAlpha(val);
-}
-        });
+        private void AnimateViewAlpha(ViewGroup viewGroup, int index)
+        {
+            if (viewGroup == null)
+            {
+                return;
+            }
+            ValueAnimator animation = mSubItemsShown
+                ? ValueAnimator.OfFloat(0f, 1f)
+                : ValueAnimator.OfFloat(1f, 0f);
+            animation.SetDuration(mSubItemsShown ? mAnimationDuration*2 : mAnimationDuration);
+            int delay = index*mAnimationDuration/mSubItemCount;
+            animation.StartDelay = mSubItemsShown ? delay/2 : 0;
 
-        animation.start();
-    }
+            animation.Update += delegate
+            {
+                float val = (float) animation.AnimatedValue;
+                viewGroup.Alpha = val;
+            };
 
-    /**
+            animation.Start();
+        }
+
+        /**
      * Show indicator animation.
      * @param startingPos The position from where the animation should start. Useful when removing sub items.
      */
-    private void expandIconIndicator(float startingPos)
-{
-    if (mIndicatorBackground != null)
-    {
-        final int totalHeight = (mSubItemHeight * mSubItemCount) - mIndicatorSize / 2 + mItemHeight / 2;
-        mCurrentSubItemsHeight = totalHeight;
-        ValueAnimator animation = mSubItemsShown ?
-                ValueAnimator.ofFloat(startingPos, totalHeight) :
-                ValueAnimator.ofFloat(totalHeight, startingPos);
-        animation.setInterpolator(new AccelerateDecelerateInterpolator());
-        animation.setDuration(mAnimationDuration);
-        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation)
-{
-    float val = (float)animation.getAnimatedValue();
-    CustomViewUtils.setViewHeight(mIndicatorBackground, (int)val);
-}
-            });
 
-            animation.start();
+        private void ExpandIconIndicator(float startingPos)
+        {
+            if (mIndicatorBackground != null)
+            {
+                int totalHeight = (mSubItemHeight*mSubItemCount) - mIndicatorSize/2 + mItemHeight/2;
+                mCurrentSubItemsHeight = totalHeight;
+                ValueAnimator animation = mSubItemsShown
+                    ? ValueAnimator.OfFloat(startingPos, totalHeight)
+                    : ValueAnimator.OfFloat(totalHeight, startingPos);
+                animation.SetInterpolator(new AccelerateDecelerateInterpolator());
+                animation.SetDuration(mAnimationDuration);
+                animation.Update += delegate
+                {
+                    float val = (float) animation.AnimatedValue;
+                    CustomViewUtil.SetViewHeight(mIndicatorBackground, (int) val);
+                };
+
+
+                animation.Start();
+            }
         }
-    }
 
-    /**
+        /**
      * Expand the sub items container with animation
      * @param startingPos The position from where the animation should start. Useful when removing sub items.
      */
-    private void expandSubItemsWithAnimation(float startingPos)
-{
-    if (mBaseSubListLayout != null)
-    {
-        final int totalHeight = (mSubItemHeight * mSubItemCount);
-        ValueAnimator animation = mSubItemsShown ?
-                ValueAnimator.ofFloat(startingPos, totalHeight) :
-                ValueAnimator.ofFloat(totalHeight, startingPos);
-        animation.setInterpolator(new AccelerateDecelerateInterpolator());
-        animation.setDuration(mAnimationDuration);
 
-        animation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation)
-{
-    float val = (float)animation.getAnimatedValue();
-    CustomViewUtils.setViewHeight(mBaseSubListLayout, (int)val);
-}
-            });
+        private void ExpandSubItemsWithAnimation(float startingPos)
+        {
+            if (mBaseSubListLayout != null)
+            {
+                int totalHeight = (mSubItemHeight*mSubItemCount);
+                ValueAnimator animation = mSubItemsShown
+                    ? ValueAnimator.OfFloat(startingPos, totalHeight)
+                    : ValueAnimator.OfFloat(totalHeight, startingPos);
+                animation.SetInterpolator(new AccelerateDecelerateInterpolator());
+                animation.SetDuration(mAnimationDuration);
+                animation.Update += delegate
+                {
+                    float val = (float) animation.AnimatedValue;
+                    CustomViewUtil.SetViewHeight(mBaseSubListLayout, (int) val);
+                };
+                animation.AnimationEnd += delegate
+                {
+                    if (mSubItemsShown)
+                    {
+                        AdjustItemPosIfHidden();
+                    }
+                };
 
-            animation.addListener(new AnimatorListenerAdapter()
-{
-    @Override
-                public void onAnimationEnd(Animator animation)
-{
-    super.onAnimationEnd(animation);
-    if (mSubItemsShown)
-    {
-        adjustItemPosIfHidden();
-    }
-}
-            });
 
-            animation.start();
+
+
+                animation.Start();
+            }
         }
-    }
 
-    /**
+        /**
      * Remove the given sub item after animation ends.
      * @param subItem The view representing the sub item to be removed.
      * @param isAdding true if adding a view. false otherwise.
      */
-    private void animateSubItemAppearance(final View subItem, boolean isAdding)
-{
-    ValueAnimator alphaAnimation = isAdding ?
-            ValueAnimator.ofFloat(0f, 1f) : ValueAnimator.ofFloat(1f, 0f);
-    alphaAnimation.setDuration(isAdding ? mAnimationDuration * 2 : mAnimationDuration / 2);
 
-    ValueAnimator heightAnimation = isAdding ?
-            ValueAnimator.ofFloat(0f, mSubItemHeight) : ValueAnimator.ofFloat(mSubItemHeight, 0f);
-    heightAnimation.setDuration(mAnimationDuration / 2);
-    heightAnimation.setStartDelay(mAnimationDuration / 2);
+        private void AnimateSubItemAppearance(View subItem, bool isAdding)
+        {
+            ValueAnimator alphaAnimation = isAdding
+                ? ValueAnimator.OfFloat(0f, 1f)
+                : ValueAnimator.OfFloat(1f, 0f);
+            alphaAnimation.SetDuration(isAdding ? mAnimationDuration*2 : mAnimationDuration/2);
 
-    alphaAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation)
-{
-    float val = (float)animation.getAnimatedValue();
-    subItem.setAlpha(val);
-}
-        });
+            ValueAnimator heightAnimation = isAdding
+                ? ValueAnimator.OfFloat(0f, mSubItemHeight)
+                : ValueAnimator.OfFloat(mSubItemHeight, 0f);
+            heightAnimation.SetDuration(mAnimationDuration/2);
+            heightAnimation.StartDelay = (mAnimationDuration/2);
+            alphaAnimation.Update += delegate
+            {
+                float val = (float) alphaAnimation.AnimatedValue;
+                subItem.Alpha = (val);
+            };
+            heightAnimation.Update += delegate
+            {
+                float val = (float) heightAnimation.AnimatedValue;
+                CustomViewUtil.SetViewHeight(subItem, (int) val);
+            };
 
-        heightAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(ValueAnimator animation)
-{
-    float val = (float)animation.getAnimatedValue();
-    CustomViewUtils.setViewHeight(subItem, (int)val);
-}
-        });
 
-        alphaAnimation.start();
-        heightAnimation.start();
 
-        if (!isAdding) {
-            heightAnimation.addListener(new AnimatorListenerAdapter()
-{
-    @Override
-                public void onAnimationEnd(Animator animation)
-{
-    super.onAnimationEnd(animation);
-    removeSubItemFromList(subItem);
-}
-            });
+
+            alphaAnimation.Start();
+            heightAnimation.Start();
+
+            if (!isAdding)
+            {
+                heightAnimation.AnimationEnd += delegate
+                {
+
+
+
+                    RemoveSubItemFromList(subItem);
+
+                };
+            }
         }
-    }
     }
 }
