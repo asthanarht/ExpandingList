@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asthanarht.expendedView", "asthanarht.expendedView\asthanarht.expendedView.csproj", "{83892EE7-61E9-4AC0-9230-B90CB8B4C230}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "asthanarht.expandedView.sample", "asthanarht.expandedView.sample\asthanarht.expandedView.sample.csproj", "{F5CA5789-B328-4067-858D-95E1BB9A5875}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,6 +19,12 @@ Global
 		{83892EE7-61E9-4AC0-9230-B90CB8B4C230}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83892EE7-61E9-4AC0-9230-B90CB8B4C230}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83892EE7-61E9-4AC0-9230-B90CB8B4C230}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{F5CA5789-B328-4067-858D-95E1BB9A5875}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5CA5789-B328-4067-858D-95E1BB9A5875}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5CA5789-B328-4067-858D-95E1BB9A5875}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{F5CA5789-B328-4067-858D-95E1BB9A5875}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5CA5789-B328-4067-858D-95E1BB9A5875}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5CA5789-B328-4067-858D-95E1BB9A5875}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
