@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.diegodobelo.expandinganimlib.MainActivity"
+    tools:context="asthanarht.expandedView.sample.MainActivity"
     android:background="@color/colorBackground">
 
   <asthanarht.expandingview.ExpandingList
